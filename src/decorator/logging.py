@@ -15,7 +15,7 @@ def _get_delta_seconds(start, end):
 def crumb(func):
 
     @wraps(func)
-    def log_crumb(*args, correlation_id="NoID", **kwargs):
+    def log_crumb(*args, correlation_id="None", **kwargs):
         run_date = date.today()
 
         start_time = datetime.now()
@@ -41,6 +41,9 @@ def crumb(func):
         }
 
         print(dumps(start_data, indent=4))
+
+        if correlation_id != "None":
+            kwargs[correlation_id] = correlation_id
 
         retval = func(*args, **kwargs)
 
