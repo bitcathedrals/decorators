@@ -1,6 +1,5 @@
 import inspect
 
-
 from functools import wraps
 
 from json import dumps
@@ -59,7 +58,7 @@ def crumb(func):
             'service.name': SERVICE,
             'service.environment': ENVIRONMENT,
 
-            'gauge.correlation_id': correlation_id, 
+            'gauge.correlation_id': correlation_id,
 
             'gauge.arg_list': repr(args),
             'gauge.arg_keys': repr(kwargs),
@@ -103,3 +102,62 @@ def crumb(func):
         return retval
 
     return log_crumb
+
+def flare(func):
+    src_function = func.__name__
+
+    module = None
+    src_module = 'unknown'
+
+    if func.__module__:
+        module = func.__module__
+        src_module = module.__name__
+
+    src_file = 'unknown'
+
+    # the line is the second element in the tuple of func,line
+    src_line = inspect.getsourcelines(func)[1]
+
+    if module:
+        src_file = inspect.getfile(module)
+
+    @wraps(func)
+    def log_flare(*args, correlation_id="None", **kwargs):
+        start_dt = datetime.now()
+        iso9660 = start_dt.iso_format(),
+
+        call_id = src_function + "-" + str(time.time_ns())
+
+        if correlation_id != "None":
+            kwargs[correlation_id] = correlation_id
+
+        retval = func(*args, **kwargs)
+
+        log_data = {
+            '@timestamp': iso9660,
+            'log.level': "DEBUG",
+            'log.logger': "flare",
+            'log.origin.file.name': src_file,
+            'log.origin.file.line': src_line,
+            'log.origin.function': src_function,
+
+            'message': 'call-and-return'
+
+            'service.name': SERVICE,
+            'service.environment': ENVIRONMENT,
+
+            'gauge.return': repr(retval),
+
+            'gauge.arg_list': repr(args),
+            'gauge.arg_keys': repr(kwargs),
+
+            'gauge.correlation_id': correlation_id,
+
+            'gauge.call.id' = call_id
+        }
+
+        print(dumps(log_data, indent=4))
+
+        return retval
+
+    return log_flare
