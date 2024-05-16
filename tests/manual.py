@@ -9,10 +9,6 @@ def foo():
         'monkey': [1,2,3],
     }
 
-
-foo()
-
-
 @logging.crumb
 def bar():
     time.sleep(1)
@@ -21,5 +17,9 @@ def bar():
         'foo': 'bar',
     }
 
-bar()
+@logging.flare
+def baz():
+    time.sleep(1)
+
+    return ['baz', 'bingo!', 'test?']
 

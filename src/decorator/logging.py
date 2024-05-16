@@ -1,4 +1,7 @@
+import importlib
 import inspect
+
+import os
 
 from functools import wraps
 
@@ -20,28 +23,33 @@ def _get_delta_seconds(start, end):
 SERVICE = os.getenv("SERVICE")
 ENVIRONMENT = os.getenv("ENVIRONMENT")
 
+def lookup_module(module_name):
+    try:
+        return importlib.import_module(module_name)
+    except ImportError:
+        print(f'decorators/logging.py: module {module_name} not found.')
+        return None
+
+    return None
+
 def crumb(func):
     src_function = func.__name__
 
     module = None
-    src_module = 'unknown'
-
     if func.__module__:
         module = func.__module__
-        src_module = module.__name__
-
-    src_file = 'unknown'
 
     # the line is the second element in the tuple of func,line
     src_line = inspect.getsourcelines(func)[1]
 
+    src_file = 'unknown'
     if module:
-        src_file = inspect.getfile(module)
+        src_file = inspect.getfile(lookup_module(module))
 
     @wraps(func)
     def log_crumb(*args, correlation_id="None", **kwargs):
         start_dt = datetime.now()
-        iso9660 = start_dt.iso_format(),
+        iso9660 = start_dt.isoformat(),
 
         call_id = src_function + "-" + str(time.time_ns())
 
@@ -53,7 +61,7 @@ def crumb(func):
             'log.origin.file.line': src_line,
             'log.origin.function': src_function,
 
-            'message': "call"
+            'message': "call",
 
             'service.name': SERVICE,
             'service.environment': ENVIRONMENT,
@@ -63,7 +71,7 @@ def crumb(func):
             'gauge.arg_list': repr(args),
             'gauge.arg_keys': repr(kwargs),
 
-            'gauge.call.id' = call_id
+            'gauge.call.id': call_id
         }
 
         print(dumps(start_data, indent=4))
@@ -83,16 +91,16 @@ def crumb(func):
             'log.origin.file.line': src_line,
             'log.origin.function': src_function,
 
-            'message': "return"
+            'message': "return",
 
             'service.name': SERVICE,
             'service.environment': ENVIRONMENT,
 
-            'gauge.correlation_id': correlation_id, 
+            'gauge.correlation_id': correlation_id,
 
             'gauge.return': repr(retval),
 
-            'gauge.call.id' = call_id,
+            'gauge.call.id': call_id,
 
             'gauge.runtime': "{:.3f}".format(_get_delta_seconds(start_dt, end_dt)),
         }
@@ -107,24 +115,20 @@ def flare(func):
     src_function = func.__name__
 
     module = None
-    src_module = 'unknown'
-
     if func.__module__:
         module = func.__module__
-        src_module = module.__name__
-
-    src_file = 'unknown'
 
     # the line is the second element in the tuple of func,line
     src_line = inspect.getsourcelines(func)[1]
 
+    src_file = 'unknown'
     if module:
-        src_file = inspect.getfile(module)
+        src_file = inspect.getfile(lookup_module(module))
 
     @wraps(func)
     def log_flare(*args, correlation_id="None", **kwargs):
         start_dt = datetime.now()
-        iso9660 = start_dt.iso_format(),
+        iso9660 = start_dt.isoformat(),
 
         call_id = src_function + "-" + str(time.time_ns())
 
@@ -141,7 +145,7 @@ def flare(func):
             'log.origin.file.line': src_line,
             'log.origin.function': src_function,
 
-            'message': 'call-and-return'
+            'message': 'call-and-return',
 
             'service.name': SERVICE,
             'service.environment': ENVIRONMENT,
@@ -153,7 +157,7 @@ def flare(func):
 
             'gauge.correlation_id': correlation_id,
 
-            'gauge.call.id' = call_id
+            'gauge.call.id': call_id
         }
 
         print(dumps(log_data, indent=4))
