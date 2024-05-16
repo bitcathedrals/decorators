@@ -1,0 +1,7 @@
+
+[project]
+description = "Python decorators as a general utility collection"
+authors = [ { name = "Michael Mattie" , email = "codermattie@runbox.com" } ]
+
+homepage = "https://github.com/bitcathedrals/decorators/"
+repository = "https://github.com/bitcathedrals/decorators.git"
