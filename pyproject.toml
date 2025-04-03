@@ -1,0 +1,12 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["build","ptpython","pytest","pytest-ordering","pytest-dependency","version-parser","setuptools","pipenv","pip","twine"]
+[tool.setuptools.packages.find]
+where = ["src"]
+[tool.setuptools.package-data]
+"*" = ["Pipfile", "*.pypi"]
+[project]
+name = "decorators"
+version = "0.1.0"
+dependencies = ["toml"]
+readme = "README.md"
