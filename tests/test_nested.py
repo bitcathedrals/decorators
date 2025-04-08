@@ -1,4 +1,4 @@
-from json_decorator import _formatter
+from decorator.json import _formatter
 
 def sample_dict():
     return {

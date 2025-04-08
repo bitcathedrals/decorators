@@ -1,5 +1,5 @@
 import pytest
-from json_decorator import jsonify
+from decorator.json import jsonify
 
 @jsonify
 class SampleJson:
