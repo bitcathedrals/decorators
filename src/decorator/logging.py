@@ -66,12 +66,12 @@ def crumb(func):
             'service.name': SERVICE,
             'service.environment': ENVIRONMENT,
 
-            'gauge.correlation_id': correlation_id,
+            'logging.correlation_id': correlation_id,
 
-            'gauge.arg_list': repr(args),
-            'gauge.arg_keys': repr(kwargs),
+            'logging.arg_list': repr(args),
+            'logging.arg_keys': repr(kwargs),
 
-            'gauge.call.id': call_id
+            'logging.call.id': call_id
         }
 
         print(dumps(start_data, indent=4))
@@ -96,13 +96,13 @@ def crumb(func):
             'service.name': SERVICE,
             'service.environment': ENVIRONMENT,
 
-            'gauge.correlation_id': correlation_id,
+            'logging.correlation_id': correlation_id,
 
-            'gauge.return': repr(retval),
+            'logging.return': repr(retval),
 
-            'gauge.call.id': call_id,
+            'logging.call.id': call_id,
 
-            'gauge.runtime': "{:.3f}".format(_get_delta_seconds(start_dt, end_dt)),
+            'logging.runtime': "{:.3f}".format(_get_delta_seconds(start_dt, end_dt)),
         }
 
         print(dumps(end_data, indent=4))
@@ -150,14 +150,14 @@ def flare(func):
             'service.name': SERVICE,
             'service.environment': ENVIRONMENT,
 
-            'gauge.return': repr(retval),
+            'logging.return': repr(retval),
 
-            'gauge.arg_list': repr(args),
-            'gauge.arg_keys': repr(kwargs),
+            'logging.arg_list': repr(args),
+            'logging.arg_keys': repr(kwargs),
 
-            'gauge.correlation_id': correlation_id,
+            'logging.correlation_id': correlation_id,
 
-            'gauge.call.id': call_id
+            'logging.call.id': call_id
         }
 
         print(dumps(log_data, indent=4))
