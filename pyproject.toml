@@ -7,6 +7,6 @@ where = ["src"]
 "*" = ["Pipfile", "*.pypi"]
 [project]
 name = "decorators"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = ["toml"]
 readme = "README.md"
